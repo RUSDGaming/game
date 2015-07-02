@@ -19,16 +19,17 @@ public class MainGameScreen implements Screen {
     public static final String tag = MainGameScreen.class.getSimpleName();
     public OrthographicCamera camera;
     private MainWorld mainWorld;
+    private SinglePlayerInput singlePlayerInput = new SinglePlayerInput();
 
     public MainGameScreen(MainGameClass game){
 
         this.game = game;
         mainWorld = new MainWorld();
-        mainWorld.addBody();
+
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Constants.WIDTH,Constants.HEIGHT);
-        Gdx.input.setInputProcessor(new SinglePlayerInput(this));
+        camera.setToOrtho(false, Constants.VIEWPORTWIDTH,Constants.VIEWPORTHEIGHT);
+        Gdx.input.setInputProcessor(singlePlayerInput);
 
 
     }
@@ -42,6 +43,7 @@ public class MainGameScreen implements Screen {
     public void render(float delta) {
 
         inputHandler();
+        singlePlayerInput.applyInputToWorld(mainWorld);
         mainWorld.stepWorld();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -63,15 +65,10 @@ public class MainGameScreen implements Screen {
 
     public void inputHandler(){
 
-        if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-            System.out.println("Space was pressed");
-        }
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
             Gdx.app.log(tag,"closing game");
             Gdx.app.exit();
         }
-
-
     }
 
 
@@ -99,4 +96,7 @@ public class MainGameScreen implements Screen {
     public void dispose() {
 
     }
+
+
+
 }
