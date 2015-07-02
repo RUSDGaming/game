@@ -1,4 +1,4 @@
-package com.rusd.game;
+package com.rusd.game.constants;
 
 import com.badlogic.gdx.Gdx;
 

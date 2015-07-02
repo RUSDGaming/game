@@ -1,15 +1,23 @@
 package com.rusd.game.input;
 
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.InputProcessorQueue;
+import com.rusd.game.screens.MainGameScreen;
 
 /**
- * Created by shane on 6/28/15.
+ * Created by shane on 7/2/15.
  */
-public class MainInputHandler implements InputProcessor{
+public class SinglePlayerInput implements InputProcessor {
+
+    private MainGameScreen game;
+
+    public SinglePlayerInput(MainGameScreen game){
+        this.game = game;
+    }
 
     @Override
     public boolean keyDown(int keycode) {
+
         return false;
     }
 

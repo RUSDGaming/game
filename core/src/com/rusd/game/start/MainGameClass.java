@@ -1,4 +1,4 @@
-package com.rusd.game;
+package com.rusd.game.start;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
