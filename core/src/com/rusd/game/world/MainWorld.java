@@ -79,6 +79,12 @@ public class MainWorld {
         return body;
     }
 
+    /**
+     * for now this just spawns a bullet at the player and moves it toward the cursor
+     *
+     * @param cam
+     * @return
+     */
     public Body spawnPlayerBullet(Camera cam) {
 
         if (player.statsComponent.getLastAttack() + player.statsComponent.getReloadTime() > TimeUtils.millis()) {
@@ -90,23 +96,22 @@ public class MainWorld {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        Float x = Float.valueOf(Gdx.input.getX());
-        Float y = Float.valueOf(Gdx.input.getY());
 
-        Vector3 cords = new Vector3(x, y, 0);
 
-        cam.unproject(cords);
-
-        bodyDef.position.set(cords.x, cords.y);
+        bodyDef.position.set(player.bodyComponent.getPosition().x, player.bodyComponent.getPosition().y);
         bodyDef.fixedRotation = true;
+
         Body body = boxWorld.createBody(bodyDef);
+        body.setBullet(true);
+
         CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(1f);
+        circleShape.setRadius(.33f);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.density = 0.5f;
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.6f;
+        fixtureDef.isSensor = true;
         Fixture fixture = body.createFixture(fixtureDef);
         circleShape.dispose();
 
@@ -124,7 +129,25 @@ public class MainWorld {
         bodies.add(body);
         entities.add(bullet);
         statsComponents.add(statsComponent);
+
+        moveBodyTowardCursor(body,cam);
         return body;
+
+    }
+
+    public void moveBodyTowardCursor(Body body, Camera cam) {
+
+        Float x = Float.valueOf(Gdx.input.getX());
+        Float y = Float.valueOf(Gdx.input.getY());
+
+        Vector3 cords = new Vector3(x, y, 0);
+        // set mouse cords to the inworld position
+        cam.unproject(cords);
+
+        Vector3 diff = cords.sub(body.getPosition().x, body.getPosition().y, 0).nor();
+
+
+        body.setLinearVelocity(diff.x * 100, diff.y * 100);
     }
 
 
