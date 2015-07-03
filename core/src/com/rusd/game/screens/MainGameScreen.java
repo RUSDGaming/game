@@ -41,6 +41,7 @@ public class MainGameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        mainWorld.cleanUp();
 
         inputHandler();
         singlePlayerInput.applyInputToWorld(mainWorld);
@@ -69,6 +70,11 @@ public class MainGameScreen implements Screen {
             Gdx.app.log(tag,"closing game");
             Gdx.app.exit();
         }
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            mainWorld.spawnPlayerBullet(camera);
+        }
+
+
     }
 
 

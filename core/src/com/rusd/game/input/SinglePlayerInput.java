@@ -1,17 +1,10 @@
 package com.rusd.game.input;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.InputProcessorQueue;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.rusd.game.entity.Entity;
 import com.rusd.game.entity.StatsComponent;
-import com.rusd.game.screens.MainGameScreen;
 import com.rusd.game.world.MainWorld;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 /**
  * Created by shane on 7/2/15.
@@ -52,7 +45,7 @@ public class SinglePlayerInput implements InputProcessor {
 
 //        Vector2 vec = playerBody.getLinearVelocity().clamp(-playerStats.getMaxSpeed(), playerStats.getMaxSpeed());
         //playerBody.setLinearVelocity(vec);
-        Gdx.app.log(tag, playerBody.getLinearVelocity().toString());
+//        Gdx.app.log(tag, playerBody.getLinearVelocity().toString());
 
 
     }

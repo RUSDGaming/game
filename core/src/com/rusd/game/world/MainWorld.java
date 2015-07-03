@@ -1,22 +1,30 @@
 package com.rusd.game.world;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.TimeUtils;
+import com.rusd.game.entity.DeathTimerComponent;
 import com.rusd.game.entity.Entity;
 import com.rusd.game.entity.StatsComponent;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Created by shane on 7/2/15.
  */
 public class MainWorld {
-
+    public static final String tag = MainWorld.class.getSimpleName();
 
 
     private ArrayList<Body> bodies = new ArrayList<>();
-    public ArrayList<StatsComponent> statsComponents = new ArrayList<>();
+    private ArrayList<StatsComponent> statsComponents = new ArrayList<>();
+    private ArrayList<DeathTimerComponent> deathTimerComponents = new ArrayList<>();
+    private ArrayList<Entity> entities = new ArrayList<>();
     public Entity player = new Entity();
     private World boxWorld;
     private Box2DDebugRenderer renderer;
@@ -35,14 +43,14 @@ public class MainWorld {
         statsComponent.setHealth(10);
         statsComponent.setMaxSpeed(70f);
         statsComponent.setArmor(1);
-        statsComponent.setAcceleration(15f);
+        statsComponent.setAcceleration(12f);
         statsComponent.setEntity(player);
         player.statsComponent = statsComponent;
         statsComponents.add(statsComponent);
     }
 
     public void stepWorld(){
-        boxWorld.step(1/60f,6,2);
+        boxWorld.step(1 / 60f, 6, 2);
     }
 
     public void renderWorld(Camera cam){
@@ -70,5 +78,89 @@ public class MainWorld {
         bodies.add(body);
         return body;
     }
+
+    public Body spawnPlayerBullet(Camera cam) {
+
+        if (player.statsComponent.getLastAttack() + player.statsComponent.getReloadTime() > TimeUtils.millis()) {
+            return null;
+        }
+        player.statsComponent.setLastAttack(TimeUtils.millis());
+        Gdx.app.debug(tag, "Shots fired");
+
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        Float x = Float.valueOf(Gdx.input.getX());
+        Float y = Float.valueOf(Gdx.input.getY());
+
+        Vector3 cords = new Vector3(x, y, 0);
+
+        cam.unproject(cords);
+
+        bodyDef.position.set(cords.x, cords.y);
+        bodyDef.fixedRotation = true;
+        Body body = boxWorld.createBody(bodyDef);
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(1f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circleShape;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.6f;
+        Fixture fixture = body.createFixture(fixtureDef);
+        circleShape.dispose();
+
+        Entity bullet = new Entity();
+
+        bullet.setBodyComponent(body);
+
+        StatsComponent statsComponent = new StatsComponent();
+        statsComponent.setEntity(bullet);
+        statsComponent.setHealth(10);
+
+        DeathTimerComponent deathTimerComponent = new DeathTimerComponent(2000L, bullet);
+        bullet.setStatsComponent(statsComponent);
+        deathTimerComponents.add(deathTimerComponent);
+        bodies.add(body);
+        entities.add(bullet);
+        statsComponents.add(statsComponent);
+        return body;
+    }
+
+
+    public void cleanUp() {
+
+        // should problably be using flat arrays for performance, I'm not concerned at this point though
+        Stream stream = deathTimerComponents.stream().filter(dtc -> !dtc.isRunning());
+        ArrayList<DeathTimerComponent> deathTimerComponentsCopy = new ArrayList<>();
+        stream.forEach(dtc -> deathTimerComponentsCopy.add((DeathTimerComponent) dtc));
+        deathTimerComponents = deathTimerComponentsCopy;
+
+        ArrayList<Entity> entitiesCopy = new ArrayList<>();
+        ArrayList<StatsComponent> statsComponentsCopy = new ArrayList<>();
+
+        // destroy all the bodies if it's entiy health is 0
+        statsComponents.stream().filter(sc -> sc.getHealth() <= 0).forEach(statConsumer);
+        statsComponents.stream().filter(sc -> sc.getHealth() > 0).forEach(sc -> statsComponentsCopy.add(sc));
+        statsComponents = statsComponentsCopy;
+
+
+    }
+
+    // What is how can java 8?
+    //http://briancovelli.com/wp-content/uploads/2014/05/i-have-no-idea-what-im-doing-science-dog.jpg
+    // destroys the entitys that get passed here.
+    Consumer<StatsComponent> statConsumer = (StatsComponent sc) -> {
+        boxWorld.destroyBody(sc.getEntity().getBodyComponent());
+        entities.remove(sc.getEntity());
+
+    };
+
+    public Void destroyBody(StatsComponent sc) {
+        boxWorld.destroyBody(sc.getEntity().getBodyComponent());
+        Gdx.app.log(tag, "Body Destroyed Mother Fucker");
+        return null;
+    }
+
 
 }

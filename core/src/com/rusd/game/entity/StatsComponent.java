@@ -4,11 +4,31 @@ package com.rusd.game.entity;
  * Created by shane on 7/2/15.
  */
 public class StatsComponent {
+    public static final String tag = StatsComponent.class.getSimpleName();
+
     private Entity entity;
     private Integer health;
     private Float maxSpeed;
     private Integer armor;
     private Float acceleration;
+    private Long reloadTime = 200L;
+    private Long lastAttack = 0L;
+
+    public Long getReloadTime() {
+        return reloadTime;
+    }
+
+    public void setReloadTime(Long reloadTime) {
+        this.reloadTime = reloadTime;
+    }
+
+    public Long getLastAttack() {
+        return lastAttack;
+    }
+
+    public void setLastAttack(Long lastAttack) {
+        this.lastAttack = lastAttack;
+    }
 
     public Entity getEntity() {
         return entity;
@@ -18,7 +38,9 @@ public class StatsComponent {
         this.entity = entity;
     }
 
-    public Integer getHealth() { return health; }
+    public Integer getHealth() {
+        return health;
+    }
 
     public void setHealth(Integer health) {
         this.health = health;
