@@ -25,7 +25,11 @@ public class MainWorld {
     private ArrayList<StatsComponent> statsComponents = new ArrayList<>();
     private ArrayList<DeathTimerComponent> deathTimerComponents = new ArrayList<>();
     private ArrayList<Entity> entities = new ArrayList<>();
-    public Entity player = new Entity();
+
+
+    public Entity[] players = new Entity[4];
+
+
     private World boxWorld;
     private Box2DDebugRenderer renderer;
 
@@ -34,10 +38,11 @@ public class MainWorld {
         boxWorld = new World(new Vector2(0,0),true);
         renderer = new Box2DDebugRenderer();
         initPlayer();
-
     }
 
+
     public void initPlayer(){
+        Entity player = new Entity();
         player.bodyComponent = addBody();
         StatsComponent statsComponent = new StatsComponent();
         statsComponent.setHealth(10);
@@ -47,6 +52,13 @@ public class MainWorld {
         statsComponent.setEntity(player);
         player.statsComponent = statsComponent;
         statsComponents.add(statsComponent);
+
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] == null) {
+                players[i] = player;
+            }
+        }
+
     }
 
     public void stepWorld(){
@@ -85,12 +97,14 @@ public class MainWorld {
      * @param cam
      * @return
      */
-    public Body spawnPlayerBullet(Camera cam) {
+    public void spawnPlayerBullet(Camera cam) {
 
-        if (player.statsComponent.getLastAttack() + player.statsComponent.getReloadTime() > TimeUtils.millis()) {
-            return null;
+        for (Entity e : players) {
+
+            if (e.statsComponent.getLastAttack() + e.statsComponent.getReloadTime() > TimeUtils.millis()) {
+                continue;
         }
-        player.statsComponent.setLastAttack(TimeUtils.millis());
+            e.statsComponent.setLastAttack(TimeUtils.millis());
         Gdx.app.debug(tag, "Shots fired");
 
 
@@ -98,7 +112,7 @@ public class MainWorld {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
 
-        bodyDef.position.set(player.bodyComponent.getPosition().x, player.bodyComponent.getPosition().y);
+            bodyDef.position.set(e.bodyComponent.getPosition().x, e.bodyComponent.getPosition().y);
         bodyDef.fixedRotation = true;
 
         Body body = boxWorld.createBody(bodyDef);
@@ -131,7 +145,8 @@ public class MainWorld {
         statsComponents.add(statsComponent);
 
         moveBodyTowardCursor(body,cam);
-        return body;
+        }
+
 
     }
 

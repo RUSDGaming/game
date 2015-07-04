@@ -2,6 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "http://clojars.org/repo/" }
     }
     dependencies {
     }
@@ -25,6 +26,7 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "http://clojars.org/repo/" }
     }
 }
 
@@ -39,6 +41,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
+
     }
 }
 
@@ -53,6 +56,8 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.10.0"
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.10.0"
+        compile "kryonet:kryonet:2.21"
+        compile "com.esotericsoftware:kryo:3.0.2"
     }
 }
 

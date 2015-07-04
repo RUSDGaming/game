@@ -3,6 +3,7 @@ package com.rusd.game.input;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.rusd.game.entity.Entity;
 import com.rusd.game.entity.StatsComponent;
 import com.rusd.game.world.MainWorld;
 
@@ -17,31 +18,36 @@ public class SinglePlayerInput implements InputProcessor {
 
     public void applyInputToWorld(MainWorld world){
 
+        for (Entity e : world.players) {
+            if (e == null) {
+                continue;
+            }
 
-        Body playerBody = world.player.bodyComponent;
-        StatsComponent playerStats = world.player.statsComponent;
-        playerBody.setLinearVelocity(playerBody.getLinearVelocity().scl(.9f));
-        world.player.bodyComponent.applyLinearImpulse(
-                horizontalAxis * world.player.statsComponent.getAcceleration(),
-                verticalAxis * world.player.statsComponent.getAcceleration(),
-                world.player.bodyComponent.getPosition().x,
-                world.player.bodyComponent.getPosition().y,
-                true);
+            Body playerBody = e.bodyComponent;
+            StatsComponent playerStats = e.statsComponent;
+            playerBody.setLinearVelocity(playerBody.getLinearVelocity().scl(.9f));
+            playerBody.applyLinearImpulse(
+                    horizontalAxis * playerStats.getAcceleration(),
+                    verticalAxis * playerStats.getAcceleration(),
+                    playerBody.getPosition().x,
+                    playerBody.getPosition().y,
+                    true);
 
 
-        //prevents the awkward sliding at low speeds after damping
-        Float x = playerBody.getLinearVelocity().x;
-        Float y = playerBody.getLinearVelocity().y;
+            //prevents the awkward sliding at low speeds after damping
+            Float x = playerBody.getLinearVelocity().x;
+            Float y = playerBody.getLinearVelocity().y;
 
-        if(Math.abs(x) < 1f){
-            x = 0f;
+            if (Math.abs(x) < 1f) {
+                x = 0f;
+            }
+            if (Math.abs(y) < 1f) {
+                y = 0f;
+            }
+
+            playerBody.setLinearVelocity(x, y);
+
         }
-        if ( Math.abs(y) < 1f){
-            y = 0f;
-        }
-
-        playerBody.setLinearVelocity(x,y);
-
 
 //        Vector2 vec = playerBody.getLinearVelocity().clamp(-playerStats.getMaxSpeed(), playerStats.getMaxSpeed());
         //playerBody.setLinearVelocity(vec);

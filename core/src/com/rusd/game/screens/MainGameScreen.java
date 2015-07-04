@@ -56,8 +56,7 @@ public class MainGameScreen implements Screen {
 
         game.batch.begin();
         mainWorld.renderWorld(camera);
-        game.font.draw(game.batch, "Welcome to Drop!!! ", 100, 150);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+
         game.batch.end();
 
 
