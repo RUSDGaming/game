@@ -3,7 +3,7 @@ package com.rusd.game.start;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.rusd.game.screens.MultiPlayerGameScreen;
+import com.rusd.game.screens.MainMenu;
 
 /**
  * Created by shane on 6/27/15.
@@ -17,7 +17,7 @@ public class MainGameClass extends Game {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        this.setScreen(new MultiPlayerGameScreen(this));
+        this.setScreen(new MainMenu(this));
 
     }
 

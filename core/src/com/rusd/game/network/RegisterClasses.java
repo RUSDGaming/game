@@ -10,5 +10,6 @@ public class RegisterClasses {
     public static void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
         kryo.register(ClientInput.class);
+        kryo.register(TransitWorld.class);
     }
 }
