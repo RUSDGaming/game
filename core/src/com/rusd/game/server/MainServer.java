@@ -29,14 +29,16 @@ public class MainServer {
 
         Server server;
         server = new Server();
-        server.start();
-        server.bind(54555, 54777);
+
+        Thread serverThread = new Thread(server);
+        serverThread.start();
         RegisterClasses.register(server);
-        server.addListener(new ServerListener(mainServer.serverWorld));
+        server.bind(54555, 54777);
+        server.addListener(new ServerListener(mainServer.serverWorld, server));
 
 
-        Thread thread = new Thread(new ServerLoop(mainServer.serverWorld));
-        thread.start();
+        Thread loopThread = new Thread(new ServerLoop(mainServer.serverWorld, server));
+        loopThread.start();
 
 
         Log.info(tag, "Server Started successfully!");

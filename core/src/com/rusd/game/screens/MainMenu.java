@@ -59,13 +59,11 @@ public class MainMenu implements Screen {
         joinButton = new TextButton("join", skin);
 
         client = new Client();
-
+        connection = new Thread(client);
+        connection.start();
         RegisterClasses.register(client);
 
         client.addListener(loginResponseListener);
-
-        connection = new Thread(client);
-        connection.start();
 
 
         joinButton.addListener(new InputListener() {
@@ -144,13 +142,17 @@ public class MainMenu implements Screen {
                 client.connect(5000, ipText.getText(), 54555, 54777);
             }
             if (client.isConnected()) {
+//                client.setKeepAliveTCP(50000);
+//                client.setKeepAliveUDP(50000);
                 Gdx.app.log(tag, "connection successFull");
                 connectionStatus.setText("Connection Success");
 
                 Login login = new Login();
                 login.setUsername(nameText.getName());
-                client.sendUDP(login);
-//                client.sendTCP(login);
+
+                // client.sendUDP(login);
+                client.sendTCP(login);
+
 
                 return client.isConnected();
             }
@@ -179,6 +181,7 @@ public class MainMenu implements Screen {
                 Login login = (Login) o;
                 if (login.getSuccess()) {
                     Gdx.app.postRunnable(changeScreen);
+                    Gdx.app.log(tag, "got a connection with Thread:" + Thread.currentThread().toString());
 
                 } else {
                     connectionStatus.setText(login.getLoginResponse());

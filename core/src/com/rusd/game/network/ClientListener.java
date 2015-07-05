@@ -25,8 +25,8 @@ public class ClientListener extends Listener {
         super.received(connection, o);
         if (o instanceof TransitWorld) {
             Gdx.app.log(tag, "got something");
-            TransitWorld tw = (TransitWorld) o;
-            clientWorld.setEntities(tw.getEntities());
+            //TransitWorld tw = (TransitWorld) o;
+            //clientWorld.setEntities(tw.getEntities());
 
         }
     }

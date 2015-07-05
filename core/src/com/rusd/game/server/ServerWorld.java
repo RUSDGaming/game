@@ -121,6 +121,7 @@ public class ServerWorld {
         fixtureDef.restitution = 0.6f;
         fixtureDef.isSensor = true;
         Fixture fixture = body.createFixture(fixtureDef);
+
         circleShape.dispose();
 
         Entity bullet = new Entity();
@@ -186,5 +187,13 @@ public class ServerWorld {
 
     public Map<Connection, Entity> getPlayers() {
         return players;
+    }
+
+    public boolean disconnectPlayer(Connection connection) {
+        Entity e = players.remove(connection);
+        if (e != null) {
+            return true;
+        }
+        return false;
     }
 }

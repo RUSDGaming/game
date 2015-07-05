@@ -5,6 +5,11 @@ package com.rusd.game.network;
  */
 public class Login {
 
+
+    public Login() {
+    }
+    
+
     private String username;
     private String password;
     private String loginResponse;

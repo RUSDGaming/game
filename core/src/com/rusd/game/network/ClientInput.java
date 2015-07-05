@@ -5,6 +5,9 @@ package com.rusd.game.network;
  */
 public class ClientInput {
 
+    public ClientInput() {
+    }
+
     private Boolean fire1 = false;
 
     public Boolean getFire1() {

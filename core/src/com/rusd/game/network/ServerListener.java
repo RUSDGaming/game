@@ -3,6 +3,7 @@ package com.rusd.game.network;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 import com.rusd.game.entity.Entity;
 import com.rusd.game.server.ServerWorld;
@@ -14,9 +15,11 @@ public class ServerListener extends Listener {
     public static final String tag = ServerListener.class.getSimpleName();
 
     ServerWorld serverWorld;
+    Server server;
 
-    public ServerListener(ServerWorld serverWorld) {
+    public ServerListener(ServerWorld serverWorld, Server server) {
         this.serverWorld = serverWorld;
+        this.server = server;
     }
 
     @Override
@@ -40,10 +43,9 @@ public class ServerListener extends Listener {
             if (serverWorld.connectPlayer(connection, login)) {
                 login.setSuccess(true);
                 login.setLoginResponse("Login Successfull");
+
             }
-            connection.sendUDP(login);
-
-
+            connection.sendTCP(login);
 
         }
     }
@@ -56,8 +58,14 @@ public class ServerListener extends Listener {
 
     @Override
     public void disconnected(Connection connection) {
-//        serverWorld.dissconnectPlayer(connection);
-        Log.info(tag, "Player is lost connection: " + connection);
-        super.disconnected(connection);
+        serverWorld.disconnectPlayer(connection);
+        Log.info(tag, "Player lost connection: " + connection);
+        connection.close();
+        for (Connection c : server.getConnections()) {
+            Log.info(tag, c.toString());
+
+        }
+
+
     }
 }
