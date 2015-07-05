@@ -8,7 +8,15 @@ import com.badlogic.gdx.physics.box2d.Body;
 public class Entity {
     public Body bodyComponent;
     public StatsComponent statsComponent;
+    public RenderComponent renderComponent;
 
+    public RenderComponent getRenderComponent() {
+        return renderComponent;
+    }
+
+    public void setRenderComponent(RenderComponent renderComponent) {
+        this.renderComponent = renderComponent;
+    }
 
     public Body getBodyComponent() {
         return bodyComponent;

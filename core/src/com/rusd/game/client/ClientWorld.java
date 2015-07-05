@@ -1,15 +1,15 @@
-package com.rusd.game.network;
+package com.rusd.game.client;
 
 import com.rusd.game.entity.Entity;
 
 import java.util.ArrayList;
 
 /**
- * Created by shane on 7/3/15.
+ * Created by shane on 7/4/15.
  */
-public class TransitWorld {
+public class ClientWorld {
 
-    private ArrayList<Entity> entities;
+    private ArrayList<Entity> entities = new ArrayList<>();
 
     public ArrayList<Entity> getEntities() {
         return entities;

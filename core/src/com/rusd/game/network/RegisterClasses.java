@@ -11,5 +11,6 @@ public class RegisterClasses {
         Kryo kryo = endPoint.getKryo();
         kryo.register(ClientInput.class);
         kryo.register(TransitWorld.class);
+        kryo.register(Login.class);
     }
 }

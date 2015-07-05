@@ -10,7 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import com.rusd.game.constants.Constants;
+import com.rusd.game.network.Login;
 import com.rusd.game.network.RegisterClasses;
 import com.rusd.game.start.MainGameClass;
 
@@ -27,11 +30,19 @@ public class MainMenu implements Screen {
     private Stage stage;
     private SpriteBatch batch;
     private MainGameClass game;
+    private Thread connection;
+    private Client client;
 
+    private Label ipLabel;
+    private TextField ipText;
+    private Label nameLabel;
+    private TextField nameText;
 
     private Label connectionStatus;
+    private TextButton joinButton;
 
     public MainMenu(MainGameClass game) {
+        Gdx.app.log(tag, Thread.currentThread().toString());
 
         this.game = game;
 
@@ -39,9 +50,33 @@ public class MainMenu implements Screen {
         Gdx.input.setInputProcessor(stage);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        Label ipLabel = new Label("IP ADDRESS: ", skin);
-        TextField ipText = new TextField("localhost", skin);
+        ipLabel = new Label("IP ADDRESS: ", skin);
+        ipText = new TextField("localhost", skin);
+        nameLabel = new Label("User Name: ", skin);
+        nameText = new TextField("", skin);
+
         connectionStatus = new Label("Status", skin);
+        joinButton = new TextButton("join", skin);
+
+        client = new Client();
+
+        RegisterClasses.register(client);
+
+        client.addListener(loginResponseListener);
+
+        connection = new Thread(client);
+        connection.start();
+
+
+        joinButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                tryConnection();
+                return true;
+            }
+
+            ;
+        });
 
 
         // table.setTouchable(Touchable.disabled);
@@ -59,7 +94,7 @@ public class MainMenu implements Screen {
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ENTER) {
                     Gdx.app.log(tag, "Enter pressed on text: " + ipText.getText());
-                    tryConnection(ipText.getText());
+//                    tryConnection();
                 }
                 return super.keyDown(event, keycode);
             }
@@ -83,10 +118,15 @@ public class MainMenu implements Screen {
             }
         });
 
+        table.add(connectionStatus).expandX().colspan(2);
+        table.row();
         table.add(ipLabel).expandX().right().top();
         table.add(ipText).expandX().left().top();
         table.row();
-        table.add(connectionStatus).expandX().colspan(2);
+        table.add(nameLabel).expandX().right().top();
+        table.add(nameText).expandX().left().top();
+        table.row();
+        table.add(joinButton).expandX().colspan(2);
 
         table.row().padBottom(Constants.HEIGHT / 2);
         table.add(exitButton).expandX().colspan(2);
@@ -95,22 +135,27 @@ public class MainMenu implements Screen {
 
     }
 
-    public boolean tryConnection(String ip) {
-        Thread connection;
-        Client client = new Client();
-        RegisterClasses.register(client);
+    public boolean tryConnection() {
 
-        connection = new Thread(client);
-        connection.start();
+
 
         try {
-            client.connect(5000, ip, 54555, 54777);
+            if (!client.isConnected()) {
+                client.connect(5000, ipText.getText(), 54555, 54777);
+            }
             if (client.isConnected()) {
                 Gdx.app.log(tag, "connection successFull");
                 connectionStatus.setText("Connection Success");
+
+                Login login = new Login();
+                login.setUsername(nameText.getName());
+                client.sendUDP(login);
+//                client.sendTCP(login);
+
                 return client.isConnected();
             }
         } catch (IOException e) {
+            e.printStackTrace();
             Gdx.app.log(tag, "Invalid name or something");
             connectionStatus.setText("Invalid name or something");
 
@@ -126,6 +171,33 @@ public class MainMenu implements Screen {
     public void show() {
 
     }
+
+    public Listener loginResponseListener = new Listener() {
+        @Override
+        public void received(Connection connection, Object o) {
+            if (o instanceof Login) {
+                Login login = (Login) o;
+                if (login.getSuccess()) {
+                    Gdx.app.postRunnable(changeScreen);
+
+                } else {
+                    connectionStatus.setText(login.getLoginResponse());
+                }
+
+
+            }
+
+        }
+    };
+
+    // when you change the screen from anonther thread you need to use this runable.
+    public Runnable changeScreen = new Runnable() {
+        @Override
+        public void run() {
+            game.setScreen(new MultiPlayerGameScreen(game, client));
+        }
+    };
+
 
     @Override
     public void render(float delta) {

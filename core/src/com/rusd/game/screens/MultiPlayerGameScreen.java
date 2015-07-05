@@ -3,45 +3,52 @@ package com.rusd.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.esotericsoftware.kryonet.Client;
+import com.rusd.game.client.ClientWorld;
 import com.rusd.game.constants.Constants;
+import com.rusd.game.entity.Entity;
+import com.rusd.game.entity.RenderComponent;
 import com.rusd.game.input.MultiPlayerInput;
 import com.rusd.game.network.ClientInput;
-import com.rusd.game.network.RegisterClasses;
+import com.rusd.game.network.ClientListener;
 import com.rusd.game.start.MainGameClass;
 
-import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * Created by shane on 7/3/15.
  */
 public class MultiPlayerGameScreen implements Screen {
 
-    public static final String tag = MainGameScreen.class.getSimpleName();
+    public static final String tag = MultiPlayerGameScreen.class.getSimpleName();
     public OrthographicCamera camera;
     private MultiPlayerInput input;
     public final MainGameClass game;
-    private Thread connection;
-    private Client client;
+    private ShapeRenderer sr;
 
-    public MultiPlayerGameScreen(MainGameClass game) {
+    private Client client;
+    private ClientWorld clientWorld;
+
+
+    public MultiPlayerGameScreen(MainGameClass game, Client client) {
+        Gdx.app.log(tag, Thread.currentThread().toString());
+
         this.game = game;
+        clientWorld = new ClientWorld();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Constants.VIEWPORTWIDTH, Constants.VIEWPORTHEIGHT);
+        input = new MultiPlayerInput();
         Gdx.input.setInputProcessor(input);
-        client = new Client();
-        RegisterClasses.register(client);
+        this.client = client;
 
+        client.addListener(new ClientListener(clientWorld));
 
-        connection = new Thread(client);
-        connection.start();
-        try {
-            client.connect(5000, "localhost", 54555, 54777);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sr = new ShapeRenderer();
+
     }
 
 
@@ -61,14 +68,27 @@ public class MultiPlayerGameScreen implements Screen {
 
         camera.update();
 
+
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.setProjectionMatrix(camera.combined);
+        sr.setColor(Color.BLUE);
+        clientWorld.getEntities().stream().forEach(entityRenderer);
+        sr.end();
+
         game.batch.setProjectionMatrix(camera.combined);
-
         game.batch.begin();
-
 
         game.batch.end();
 
     }
+
+    Consumer<Entity> entityRenderer = (Entity e) -> {
+        RenderComponent rc = e.getRenderComponent();
+        // should remove this check it needlessly slows down the loop.
+        if (rc != null) {
+            rc.renderShape(sr);
+        }
+    };
 
     @Override
     public void resize(int width, int height) {

@@ -1,6 +1,6 @@
 package com.rusd.game.entity;
 
-import com.badlogic.gdx.Gdx;
+import com.esotericsoftware.minlog.Log;
 
 /**
  * Created by shane on 7/3/15.
@@ -24,9 +24,9 @@ public class DeathTimerComponent {
                     Thread.sleep(lifeSpan);
                     running = false;
                     entity.statsComponent.setHealth(-1);
-                    Gdx.app.log(tag, "died");
+                    Log.debug(tag, "died");
                 } catch (InterruptedException e) {
-                    Gdx.app.error(tag, e.toString());
+                    Log.error(tag, e.toString());
                     entity.statsComponent.setHealth(-1);
                     running = false;
                 }
