@@ -2,6 +2,7 @@ package com.rusd.game.server;
 
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.esotericsoftware.kryonet.Connection;
@@ -78,6 +79,7 @@ public class ServerWorld {
         StatsComponent statsComponent = new StatsComponent();
         statsComponent.setEntity(player);
         statsComponent.setHealth(10);
+        statsComponent.setReloadTime(100L);
         player.setStatsComponent(statsComponent);
 
         RenderComponent renderComponent = new RenderComponent();
@@ -97,7 +99,7 @@ public class ServerWorld {
     }
 
 
-    public void addBullet(Entity player, Vector2 mousePos) {
+    public void addBullet(Entity player, Vector3 mousePos) {
 
         if (player.statsComponent.getLastAttack() + player.statsComponent.getReloadTime() > TimeUtils.millis()) {
             return;
@@ -139,6 +141,7 @@ public class ServerWorld {
         statsComponent.setEntity(bullet);
         statsComponent.setHealth(10);
 
+
         DeathTimerComponent deathTimerComponent = new DeathTimerComponent(2000L, bullet);
         bullet.setStatsComponent(statsComponent);
 
@@ -162,7 +165,12 @@ public class ServerWorld {
 
         //Vector3 diff = cords.sub(body.getPosition().x, body.getPosition().y, 0).nor();
 
-        body.setLinearVelocity(100, 100);
+
+        Vector3 diff = mousePos.sub(body.getPosition().x, body.getPosition().y, 0).nor();
+
+        body.setLinearVelocity(diff.x * 100, diff.y * 100);
+
+
 
     }
 

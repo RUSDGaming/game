@@ -1,6 +1,5 @@
 package com.rusd.game.network;
 
-import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -30,8 +29,8 @@ public class ServerListener extends Listener {
             if (clientInput.getFire1()) {
                 Entity player = serverWorld.getPlayerByConnection(connection);
                 if (player != null) {
-                    Vector2 mousePos = new Vector2(800, 450);
-                    serverWorld.addBullet(player, mousePos);
+
+                    serverWorld.addBullet(player, clientInput.getMouseWorldPos());
                     //Log.info(tag, "Le shots fired");
                 } else {
                     Log.info(tag, "player was null: " + player);

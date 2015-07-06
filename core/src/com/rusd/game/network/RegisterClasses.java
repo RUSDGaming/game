@@ -1,5 +1,6 @@
 package com.rusd.game.network;
 
+import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.rusd.game.client.ClientEntity;
@@ -22,6 +23,7 @@ public class RegisterClasses {
         kryo.register(ClientEntity.class);
         kryo.register(Entity.class);
         kryo.register(com.rusd.game.network.TransitWorld.class);
+        kryo.register(Vector3.class);
 //        kryo.register(DeathTimerComponent.class);
 //        kryo.register(RenderComponent.class);
 //        kryo.register(StatsComponent.class);

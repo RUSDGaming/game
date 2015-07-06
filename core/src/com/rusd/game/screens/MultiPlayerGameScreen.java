@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.esotericsoftware.kryonet.Client;
 import com.rusd.game.client.ClientEntity;
 import com.rusd.game.client.ClientWorld;
@@ -122,6 +123,10 @@ public class MultiPlayerGameScreen implements Screen {
         }
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             clientInput.setFire1(true);
+            Vector3 mousePos = new Vector3((float) Gdx.input.getX(), (float) Gdx.input.getY(), 0f);
+            camera.unproject(mousePos);
+            clientInput.setMouseWorldPos(mousePos);
+
             client.sendUDP(clientInput);
         }
 
