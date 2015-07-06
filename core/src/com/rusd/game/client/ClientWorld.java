@@ -1,21 +1,19 @@
 package com.rusd.game.client;
 
-import com.rusd.game.entity.Entity;
-
 import java.util.ArrayList;
 
 /**
  * Created by shane on 7/4/15.
  */
 public class ClientWorld {
+    ArrayList<ClientEntity> entities = new ArrayList<>();
 
-    private ArrayList<Entity> entities = new ArrayList<>();
 
-    public ArrayList<Entity> getEntities() {
+    public ArrayList<ClientEntity> getEntities() {
         return entities;
     }
 
-    public void setEntities(ArrayList<Entity> entities) {
+    public void setEntities(ArrayList<ClientEntity> entities) {
         this.entities = entities;
     }
 }

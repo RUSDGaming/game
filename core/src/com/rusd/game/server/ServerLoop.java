@@ -21,7 +21,7 @@ public class ServerLoop implements Runnable {
     private ServerWorld world;
     private ExecutorService executorService;
 
-    private Long timeStep = 1000L;
+    private Long timeStep = 20L;
     private Long start;
     private TransitWorld transitWorld;
     private Server server;
@@ -34,8 +34,9 @@ public class ServerLoop implements Runnable {
 
     @Override
     public void run() {
-        try {
-            while (!Thread.interrupted()) {
+
+        while (!Thread.interrupted()) {
+            try {
                 start = TimeUtils.millis();
                 world.stepWorld();
                 transitWorld = new TransitWorld();
@@ -44,16 +45,25 @@ public class ServerLoop implements Runnable {
                 e.setStatsComponent(new StatsComponent());
 
 
-                transitWorld.setEntity(e);
-                //transitWorld.setEntities(world.getEntities());
-                world.getPlayers().keySet().stream().forEach(connectionConsumer);
+                transitWorld.setEntities(world.getEntities());
+//                if (transitWorld.getClientEntities() != null){
+//                    Log.info(tag, "sending entities: " + transitWorld.getClientEntities().size());
+//                }
+//                Login l = new Login();
+//                l.setSuccess(true);
+//                l.setLoginResponse("game loope...");
+
+//                server.sendToAllUDP(world.getEntities());
+//                world.getPlayers().keySet().stream().forEach(connectionConsumer);
+                server.sendToAllUDP(transitWorld);
 
 
                 Thread.sleep(timeStep + start - TimeUtils.millis());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+
 
     }
 
@@ -63,8 +73,8 @@ public class ServerLoop implements Runnable {
 //        l.setSuccess(true);
 //        l.setLoginResponse("game loope...");
 //        c.sendUDP(c);
-        //server.sendToAllUDP(l);
-        c.sendUDP(transitWorld);
+        server.sendToAllUDP(transitWorld);
+        //c.sendUDP(transitWorld);
         Log.info(tag, "sending info");
     };
 

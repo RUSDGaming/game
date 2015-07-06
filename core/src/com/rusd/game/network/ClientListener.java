@@ -24,16 +24,21 @@ public class ClientListener extends Listener {
     public void received(Connection connection, Object o) {
         super.received(connection, o);
         if (o instanceof TransitWorld) {
-            Gdx.app.log(tag, "got something");
-            //TransitWorld tw = (TransitWorld) o;
-            //clientWorld.setEntities(tw.getEntities());
+            TransitWorld tw = (TransitWorld) o;
+            if (tw.getClientEntities() != null) {
+                clientWorld.setEntities(tw.getClientEntities());
+            }
 
         }
     }
 
     @Override
     public void disconnected(Connection connection) {
-        Gdx.app.log(tag, "Was dissconnected... " + connection.toString());
+        Gdx.app.log(tag, "Was disconnected... " + connection.toString());
+        Gdx.app.exit();
         super.disconnected(connection);
     }
+
+    // when you change the screen from anonther thread you need to use this runable.
+
 }

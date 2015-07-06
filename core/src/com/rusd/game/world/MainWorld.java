@@ -110,8 +110,6 @@ public class MainWorld {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-
-
             bodyDef.position.set(e.bodyComponent.getPosition().x, e.bodyComponent.getPosition().y);
         bodyDef.fixedRotation = true;
 

@@ -32,7 +32,7 @@ public class ServerListener extends Listener {
                 if (player != null) {
                     Vector2 mousePos = new Vector2(800, 450);
                     serverWorld.addBullet(player, mousePos);
-                    Log.info(tag, "Le shots fired");
+                    //Log.info(tag, "Le shots fired");
                 } else {
                     Log.info(tag, "player was null: " + player);
                 }
@@ -46,6 +46,12 @@ public class ServerListener extends Listener {
 
             }
             connection.sendTCP(login);
+
+        } else if (o instanceof EntityRequest) {
+            EntityRequest er = (EntityRequest) o;
+            TransitWorld tw = new TransitWorld();
+            tw.setEntities(serverWorld.getEntities());
+            connection.sendUDP(tw);
 
         }
     }

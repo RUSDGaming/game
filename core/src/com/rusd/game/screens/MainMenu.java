@@ -44,6 +44,7 @@ public class MainMenu implements Screen {
     public MainMenu(MainGameClass game) {
         Gdx.app.log(tag, Thread.currentThread().toString());
 
+
         this.game = game;
 
         stage = new Stage();
@@ -59,9 +60,9 @@ public class MainMenu implements Screen {
         joinButton = new TextButton("join", skin);
 
         client = new Client();
+        RegisterClasses.register(client);
         connection = new Thread(client);
         connection.start();
-        RegisterClasses.register(client);
 
         client.addListener(loginResponseListener);
 
@@ -189,6 +190,9 @@ public class MainMenu implements Screen {
 
 
             }
+//            if(o instanceof TransitWorld){
+//                Gdx.app.log(tag,"wtfffff");
+//            }
 
         }
     };

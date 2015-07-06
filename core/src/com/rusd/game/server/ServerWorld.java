@@ -15,6 +15,8 @@ import com.rusd.game.network.Login;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Created by shane on 7/3/15.
@@ -40,6 +42,8 @@ public class ServerWorld {
 
     public void stepWorld() {
         boxWorld.step(1 / 60f, 6, 2);
+        cleanUp();
+
     }
 
 
@@ -51,7 +55,7 @@ public class ServerWorld {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
-        bodyDef.position.set(100, 100);
+        bodyDef.position.set(10, 10);
         bodyDef.fixedRotation = true;
 
         Body body = boxWorld.createBody(bodyDef);
@@ -101,7 +105,7 @@ public class ServerWorld {
 
         player.statsComponent.setLastAttack(TimeUtils.millis());
 
-        Log.debug(tag, "Shots Fired");
+        Log.info(tag, "Shots Fired");
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -112,14 +116,17 @@ public class ServerWorld {
         Body body = boxWorld.createBody(bodyDef);
         body.setBullet(true);
 
+
         CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(.33f);
+        circleShape.setRadius(1f);
+
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.density = 0.5f;
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.6f;
         fixtureDef.isSensor = true;
+
         Fixture fixture = body.createFixture(fixtureDef);
 
         circleShape.dispose();
@@ -135,13 +142,13 @@ public class ServerWorld {
         DeathTimerComponent deathTimerComponent = new DeathTimerComponent(2000L, bullet);
         bullet.setStatsComponent(statsComponent);
 
-        RenderComponent renderComponent = new RenderComponent();
-        renderComponent.setEntity(bullet);
-        Circle circle = new Circle();
-        circle.setPosition(body.getPosition().x, body.getPosition().y);
-        renderComponent.setShape(RenderComponent.Shape.CIRCLE);
-        renderComponent.setCircle(circle);
-        bullet.setRenderComponent(renderComponent);
+//        RenderComponent renderComponent = new RenderComponent();
+//        renderComponent.setEntity(bullet);
+//        Circle circle = new Circle();
+//        circle.setPosition(5, 5);
+//        renderComponent.setShape(RenderComponent.Shape.CIRCLE);
+//        renderComponent.setCircle(circle);
+//        bullet.setRenderComponent(renderComponent);
 
 
         deathTimerComponents.add(deathTimerComponent);
@@ -157,7 +164,6 @@ public class ServerWorld {
 
         body.setLinearVelocity(100, 100);
 
-
     }
 
     public Entity getPlayerByConnection(Connection c) {
@@ -165,13 +171,13 @@ public class ServerWorld {
     }
 
     public boolean connectPlayer(Connection c, Login login) {
-        Log.debug(tag, "Connection id is: " + c.getID());
-        Log.debug(tag, "Connection Info, TCP: " + c.getRemoteAddressTCP() + " UDP: " + c.getRemoteAddressUDP());
+        Log.info(tag, "Connection id is: " + c.getID());
+        Log.info(tag, "Connection Info, TCP: " + c.getRemoteAddressTCP() + " UDP: " + c.getRemoteAddressUDP());
 
         Entity player = createPlayer();
 
         if (players.containsKey(c)) {
-            Log.debug(tag, "player already logged in" + login.getUsername());
+            Log.info(tag, "player already logged in" + login.getUsername());
             return true;
         }
 
@@ -196,4 +202,33 @@ public class ServerWorld {
         }
         return false;
     }
+
+
+    public void cleanUp() {
+
+        // should problably be using flat arrays for performance, I'm not concerned at this point though
+        Stream stream = deathTimerComponents.stream().filter(dtc -> !dtc.isRunning());
+        ArrayList<DeathTimerComponent> deathTimerComponentsCopy = new ArrayList<>();
+        stream.forEach(dtc -> deathTimerComponentsCopy.add((DeathTimerComponent) dtc));
+        deathTimerComponents = deathTimerComponentsCopy;
+
+        ArrayList<Entity> entitiesCopy = new ArrayList<>();
+        ArrayList<StatsComponent> statsComponentsCopy = new ArrayList<>();
+
+        // destroy all the bodies if it's entiy health is 0
+        statsComponents.stream().filter(sc -> sc.getHealth() <= 0).forEach(statConsumer);
+        statsComponents.stream().filter(sc -> sc.getHealth() > 0).forEach(sc -> statsComponentsCopy.add(sc));
+        statsComponents = statsComponentsCopy;
+
+
+    }
+
+    // What is how can java 8?
+    //http://briancovelli.com/wp-content/uploads/2014/05/i-have-no-idea-what-im-doing-science-dog.jpg
+    // destroys the entitys that get passed here.
+    Consumer<StatsComponent> statConsumer = (StatsComponent sc) -> {
+        boxWorld.destroyBody(sc.getEntity().getBodyComponent());
+        entities.remove(sc.getEntity());
+
+    };
 }

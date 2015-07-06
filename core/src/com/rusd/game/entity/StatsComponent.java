@@ -11,7 +11,7 @@ public class StatsComponent {
     private Float maxSpeed;
     private Integer armor;
     private Float acceleration;
-    private Long reloadTime = 200L;
+    private Long reloadTime = 1000L;
     private Long lastAttack = 0L;
 
     public Long getReloadTime() {

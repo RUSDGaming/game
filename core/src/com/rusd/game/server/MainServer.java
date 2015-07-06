@@ -23,19 +23,20 @@ public class MainServer {
         Log.set(Log.LEVEL_INFO);
 
 
+
         Log.info(tag, "Starting Server...");
         MainServer mainServer = new MainServer();
 
 
         Server server;
         server = new Server();
+        RegisterClasses.register(server);
 
         Thread serverThread = new Thread(server);
-        serverThread.start();
-        RegisterClasses.register(server);
         server.bind(54555, 54777);
         server.addListener(new ServerListener(mainServer.serverWorld, server));
 
+        serverThread.start();
 
         Thread loopThread = new Thread(new ServerLoop(mainServer.serverWorld, server));
         loopThread.start();

@@ -8,10 +8,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.esotericsoftware.kryonet.Client;
+import com.rusd.game.client.ClientEntity;
 import com.rusd.game.client.ClientWorld;
 import com.rusd.game.constants.Constants;
-import com.rusd.game.entity.Entity;
-import com.rusd.game.entity.RenderComponent;
 import com.rusd.game.input.MultiPlayerInput;
 import com.rusd.game.network.ClientInput;
 import com.rusd.game.network.ClientListener;
@@ -61,6 +60,7 @@ public class MultiPlayerGameScreen implements Screen {
     public void render(float delta) {
 
 
+        //client.sendUDP(new EntityRequest());
         inputHandler();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -69,7 +69,7 @@ public class MultiPlayerGameScreen implements Screen {
         camera.update();
 
 
-        sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
         sr.setProjectionMatrix(camera.combined);
         sr.setColor(Color.BLUE);
         clientWorld.getEntities().stream().forEach(entityRenderer);
@@ -82,12 +82,9 @@ public class MultiPlayerGameScreen implements Screen {
 
     }
 
-    Consumer<Entity> entityRenderer = (Entity e) -> {
-        RenderComponent rc = e.getRenderComponent();
-        // should remove this check it needlessly slows down the loop.
-        if (rc != null) {
-            rc.renderShape(sr);
-        }
+    Consumer<ClientEntity> entityRenderer = (ClientEntity e) -> {
+
+        sr.circle(e.getX(), e.getY(), e.getRadius());
     };
 
     @Override
