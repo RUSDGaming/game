@@ -29,14 +29,13 @@ public class MultiPlayerGameScreen implements Screen {
     private MultiPlayerInput input;
     public final MainGameClass game;
     private ShapeRenderer sr;
-
     private Client client;
     private ClientWorld clientWorld;
 
 
     public MultiPlayerGameScreen(MainGameClass game, Client client) {
-        Gdx.app.log(tag, Thread.currentThread().toString());
 
+        Gdx.app.log(tag, Thread.currentThread().toString());
         this.game = game;
         clientWorld = new ClientWorld();
         camera = new OrthographicCamera();
@@ -44,9 +43,7 @@ public class MultiPlayerGameScreen implements Screen {
         input = new MultiPlayerInput();
         Gdx.input.setInputProcessor(input);
         this.client = client;
-
         client.addListener(new ClientListener(clientWorld));
-
         sr = new ShapeRenderer();
 
     }
@@ -60,31 +57,23 @@ public class MultiPlayerGameScreen implements Screen {
     @Override
     public void render(float delta) {
 
-
         //client.sendUDP(new EntityRequest());
         inputHandler();
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         camera.update();
-
-
         sr.begin(ShapeRenderer.ShapeType.Filled);
         sr.setProjectionMatrix(camera.combined);
         sr.setColor(Color.BLUE);
         clientWorld.getEntities().stream().forEach(entityRenderer);
         sr.end();
-
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-
         game.batch.end();
 
     }
 
     Consumer<ClientEntity> entityRenderer = (ClientEntity e) -> {
-
         sr.circle(e.getX(), e.getY(), e.getRadius());
     };
 
@@ -126,10 +115,22 @@ public class MultiPlayerGameScreen implements Screen {
             Vector3 mousePos = new Vector3((float) Gdx.input.getX(), (float) Gdx.input.getY(), 0f);
             camera.unproject(mousePos);
             clientInput.setMouseWorldPos(mousePos);
-
-            client.sendUDP(clientInput);
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            clientInput.setLeft(Gdx.input.isKeyPressed(Input.Keys.A));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            clientInput.setRight(true);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
+            clientInput.setUp(true);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.O)) {
+            clientInput.setDown(true);
+        }
+
+        client.sendUDP(clientInput);
 
     }
 }

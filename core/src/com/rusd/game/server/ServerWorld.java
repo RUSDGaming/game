@@ -11,11 +11,13 @@ import com.rusd.game.entity.DeathTimerComponent;
 import com.rusd.game.entity.Entity;
 import com.rusd.game.entity.RenderComponent;
 import com.rusd.game.entity.StatsComponent;
+import com.rusd.game.network.ClientInput;
 import com.rusd.game.network.Login;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -27,12 +29,13 @@ public class ServerWorld {
 
     private World boxWorld;
 
-
     private ArrayList<Body> bodies = new ArrayList<>();
     private ArrayList<StatsComponent> statsComponents = new ArrayList<>();
     private ArrayList<DeathTimerComponent> deathTimerComponents = new ArrayList<>();
     private ArrayList<Entity> entities = new ArrayList<>();
+
     private Map<Connection, Entity> players = new HashMap<>();
+    private Map<Entity, ClientInput> clientInputMap = new HashMap<>();
 
 
     public ServerWorld() {
@@ -44,8 +47,55 @@ public class ServerWorld {
     public void stepWorld() {
         boxWorld.step(1 / 60f, 6, 2);
         cleanUp();
-
+        clientInputMap.forEach(inputConsumer);
     }
+
+    BiConsumer<Entity, ClientInput> inputConsumer = (entity, clientInput) -> {
+
+        if (clientInput.getFire1()) {
+            addBullet(entity, clientInput.getMouseWorldPos());
+
+        }
+
+        Float verticalAxis = 0f;
+        Float horizontalAxis = 0f;
+
+        if (clientInput.getRight())
+            horizontalAxis += 1f;
+        if (clientInput.getLeft())
+            horizontalAxis -= 1f;
+        if (clientInput.getUp())
+            verticalAxis += 1f;
+        if (clientInput.getDown())
+            verticalAxis -= 1f;
+
+
+        Body playerBody = entity.bodyComponent;
+        StatsComponent playerStats = entity.statsComponent;
+        playerBody.setLinearVelocity(playerBody.getLinearVelocity().scl(.9f));
+        playerBody.applyLinearImpulse(
+                horizontalAxis * playerStats.getAcceleration(),
+                verticalAxis * playerStats.getAcceleration(),
+                playerBody.getPosition().x,
+                playerBody.getPosition().y,
+                true);
+
+
+        //prevents the awkward sliding at low speeds after damping
+        Float x = playerBody.getLinearVelocity().x;
+        Float y = playerBody.getLinearVelocity().y;
+
+        if (Math.abs(x) < 1f) {
+            x = 0f;
+        }
+        if (Math.abs(y) < 1f) {
+            y = 0f;
+        }
+
+        playerBody.setLinearVelocity(x, y);
+
+
+    };
 
 
     public Entity createPlayer() {
@@ -80,6 +130,8 @@ public class ServerWorld {
         statsComponent.setEntity(player);
         statsComponent.setHealth(10);
         statsComponent.setReloadTime(100L);
+        statsComponent.setAcceleration(15f);
+        statsComponent.setMaxSpeed(50f);
         player.setStatsComponent(statsComponent);
 
         RenderComponent renderComponent = new RenderComponent();
@@ -239,4 +291,8 @@ public class ServerWorld {
         entities.remove(sc.getEntity());
 
     };
+
+    public void updateClientInput(Entity e, ClientInput clientInput) {
+        clientInputMap.put(e, clientInput);
+    }
 }

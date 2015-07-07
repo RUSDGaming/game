@@ -26,17 +26,9 @@ public class ServerListener extends Listener {
 //        super.received(connection, o);
         if (o instanceof ClientInput) {
             ClientInput clientInput = (ClientInput) o;
-            if (clientInput.getFire1()) {
-                Entity player = serverWorld.getPlayerByConnection(connection);
-                if (player != null) {
+            Entity player = serverWorld.getPlayerByConnection(connection);
+            serverWorld.updateClientInput(player, clientInput);
 
-                    serverWorld.addBullet(player, clientInput.getMouseWorldPos());
-                    //Log.info(tag, "Le shots fired");
-                } else {
-                    Log.info(tag, "player was null: " + player);
-                }
-
-            }
         } else if (o instanceof Login) {
             Login login = (Login) o;
             if (serverWorld.connectPlayer(connection, login)) {
