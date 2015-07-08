@@ -27,7 +27,7 @@ public class MultiPlayerGameScreen implements Screen {
     public static final String tag = MultiPlayerGameScreen.class.getSimpleName();
     public OrthographicCamera camera;
     private MultiPlayerInput input;
-    public final MainGameClass game;
+    public MainGameClass game;
     private ShapeRenderer sr;
     private Client client;
     private ClientWorld clientWorld;
@@ -69,6 +69,8 @@ public class MultiPlayerGameScreen implements Screen {
         sr.end();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+
+        clientWorld.getEntities().stream().forEach(entityBatchRenderer);
         game.batch.end();
 
     }
@@ -76,6 +78,15 @@ public class MultiPlayerGameScreen implements Screen {
     Consumer<ClientEntity> entityRenderer = (ClientEntity e) -> {
         sr.circle(e.getX(), e.getY(), e.getRadius());
     };
+
+    Consumer<ClientEntity> entityBatchRenderer = (ClientEntity e) -> {
+
+        if (e.getName() != null) {
+            game.font.draw(game.batch, e.getName(), e.getX(), e.getY() + 10);
+
+        }
+    };
+
 
     @Override
     public void resize(int width, int height) {

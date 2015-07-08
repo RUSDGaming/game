@@ -159,7 +159,7 @@ public class ServerWorld {
 
         player.statsComponent.setLastAttack(TimeUtils.millis());
 
-        Log.info(tag, "Shots Fired");
+        //Log.info(tag, "Shots Fired");
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -235,6 +235,8 @@ public class ServerWorld {
         Log.info(tag, "Connection Info, TCP: " + c.getRemoteAddressTCP() + " UDP: " + c.getRemoteAddressUDP());
 
         Entity player = createPlayer();
+        player.setName(login.getUsername());
+        Log.info(tag, login.getUsername() + " Logged in");
 
         if (players.containsKey(c)) {
             Log.info(tag, "player already logged in" + login.getUsername());

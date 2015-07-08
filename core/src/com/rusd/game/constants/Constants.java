@@ -8,6 +8,6 @@ import com.badlogic.gdx.Gdx;
 public class Constants {
     public static final int HEIGHT = Gdx.graphics.getHeight();
     public static final int WIDTH = Gdx.graphics.getWidth();
-    public static final int VIEWPORTWIDTH = 160;
-    public static final int VIEWPORTHEIGHT = 90;
+    public static final int VIEWPORTWIDTH = 320;
+    public static final int VIEWPORTHEIGHT = 180;
 }

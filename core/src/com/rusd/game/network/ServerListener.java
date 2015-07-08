@@ -32,6 +32,7 @@ public class ServerListener extends Listener {
         } else if (o instanceof Login) {
             Login login = (Login) o;
             if (serverWorld.connectPlayer(connection, login)) {
+
                 login.setSuccess(true);
                 login.setLoginResponse("Login Successfull");
 

@@ -149,7 +149,8 @@ public class MainMenu implements Screen {
                 connectionStatus.setText("Connection Success");
 
                 Login login = new Login();
-                login.setUsername(nameText.getName());
+
+                login.setUsername(nameText.getText());
 
                 // client.sendUDP(login);
                 client.sendTCP(login);

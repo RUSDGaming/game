@@ -7,10 +7,20 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class ClientEntity {
     private int textureId;
+    private String name = "";
 
     private float x;
     private float y;
     private float radius;
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public int getTextureId() {
         return textureId;
