@@ -1,6 +1,8 @@
 package com.rusd.game.server;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -37,6 +39,8 @@ public class ServerWorld {
     private Map<Connection, Entity> players = new HashMap<>();
     private Map<Entity, ClientInput> clientInputMap = new HashMap<>();
 
+    private ArrayList<Entity> entiesToRemove = new ArrayList<>();
+
 
     public ServerWorld() {
         Box2D.init();
@@ -49,6 +53,7 @@ public class ServerWorld {
         cleanUp();
         clientInputMap.forEach(inputConsumer);
     }
+
 
     BiConsumer<Entity, ClientInput> inputConsumer = (entity, clientInput) -> {
 
@@ -186,6 +191,7 @@ public class ServerWorld {
         circleShape.dispose();
 
         Entity bullet = new Entity();
+        bullet.setColor(player.getColor());
 
         bullet.setBodyComponent(body);
 
@@ -237,6 +243,7 @@ public class ServerWorld {
         Entity player = createPlayer();
         player.setName(login.getUsername());
         Log.info(tag, login.getUsername() + " Logged in");
+        player.setColor(new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1));
 
         if (players.containsKey(c)) {
             Log.info(tag, "player already logged in" + login.getUsername());
@@ -259,9 +266,13 @@ public class ServerWorld {
 
     public boolean disconnectPlayer(Connection connection) {
         Entity e = players.remove(connection);
+
         if (e != null) {
+            entiesToRemove.add(e);
             return true;
         }
+        connection.close();
+
         return false;
     }
 
@@ -282,8 +293,21 @@ public class ServerWorld {
         statsComponents.stream().filter(sc -> sc.getHealth() > 0).forEach(sc -> statsComponentsCopy.add(sc));
         statsComponents = statsComponentsCopy;
 
+        entiesToRemove.stream().forEach(removeConsumer);
+        entiesToRemove.clear();
+
 
     }
+
+    Consumer<Entity> removeConsumer = (Entity entity) -> {
+        statsComponents.remove(entity.getStatsComponent());
+        bodies.remove(entity.getBodyComponent());
+        boxWorld.destroyBody(entity.getBodyComponent());
+        entities.remove(entity);
+        players.remove(entity);
+        clientInputMap.remove(entity);
+
+    };
 
     // What is how can java 8?
     //http://briancovelli.com/wp-content/uploads/2014/05/i-have-no-idea-what-im-doing-science-dog.jpg

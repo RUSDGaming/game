@@ -34,6 +34,7 @@ public class TransitWorld {
             clientEntity.setPosition(e.getBodyComponent().getPosition());
             clientEntity.setTextureId(-1);
             clientEntity.setName(e.getName());
+            clientEntity.setColor(e.getColor());
             try {
                 clientEntity.setRadius(e.getBodyComponent().getFixtureList().get(0).getShape().getRadius());
 

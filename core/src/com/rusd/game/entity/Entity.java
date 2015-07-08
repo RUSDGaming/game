@@ -1,5 +1,6 @@
 package com.rusd.game.entity;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Body;
 
 /**
@@ -11,6 +12,16 @@ public class Entity {
     public StatsComponent statsComponent;
     public RenderComponent renderComponent;
     public String name;
+    @Deprecated// This is only a temp use case...
+    private Color color = Color.PINK;
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
 
     public String getName() {
         return name;

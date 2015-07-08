@@ -1,5 +1,6 @@
 package com.rusd.game.client;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -8,11 +9,19 @@ import com.badlogic.gdx.math.Vector2;
 public class ClientEntity {
     private int textureId;
     private String name = "";
+    private Color color = Color.PINK;
 
     private float x;
     private float y;
     private float radius;
 
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
 
     public String getName() {
         return name;

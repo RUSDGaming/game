@@ -70,12 +70,13 @@ public class MultiPlayerGameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        clientWorld.getEntities().stream().forEach(entityBatchRenderer);
+//        clientWorld.getEntities().stream().forEach(entityBatchRenderer);
         game.batch.end();
 
     }
 
     Consumer<ClientEntity> entityRenderer = (ClientEntity e) -> {
+        sr.setColor(e.getColor());
         sr.circle(e.getX(), e.getY(), e.getRadius());
     };
 
