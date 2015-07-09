@@ -9,10 +9,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
-import com.rusd.game.entity.DeathTimerComponent;
-import com.rusd.game.entity.Entity;
-import com.rusd.game.entity.RenderComponent;
-import com.rusd.game.entity.StatsComponent;
+import com.rusd.game.entity.*;
 import com.rusd.game.network.ClientInput;
 import com.rusd.game.network.Login;
 
@@ -45,6 +42,8 @@ public class ServerWorld {
     public ServerWorld() {
         Box2D.init();
         boxWorld = new World(new Vector2(0, 0), true);
+        boxWorld.setContactListener(new ContactListenerImpl());
+
     }
 
 
