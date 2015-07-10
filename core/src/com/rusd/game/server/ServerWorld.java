@@ -132,7 +132,7 @@ public class ServerWorld {
 
         StatsComponent statsComponent = new StatsComponent();
         statsComponent.setEntity(player);
-        statsComponent.setHealth(10);
+        statsComponent.setHealth(10f);
         statsComponent.setReloadTime(100L);
         statsComponent.setAcceleration(15f);
         statsComponent.setMaxSpeed(50f);
@@ -196,7 +196,7 @@ public class ServerWorld {
 
         StatsComponent statsComponent = new StatsComponent();
         statsComponent.setEntity(bullet);
-        statsComponent.setHealth(10);
+        statsComponent.setHealth(10f);
 
 
         DeathTimerComponent deathTimerComponent = new DeathTimerComponent(2000L, bullet);

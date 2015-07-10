@@ -12,6 +12,12 @@ public class Entity {
     public StatsComponent statsComponent;
     public RenderComponent renderComponent;
     public String name;
+    public EntityContactHandler entityContactHandler;
+
+    protected Boolean destroyMe = false;
+
+
+
     @Deprecated// This is only a temp use case...
     private Color color = Color.PINK;
 

@@ -7,12 +7,21 @@ public class StatsComponent {
     public static final String tag = StatsComponent.class.getSimpleName();
 
     private Entity entity;
-    private Integer health;
-    private Float maxSpeed;
-    private Integer armor;
-    private Float acceleration;
-    private Long reloadTime;
+    private Float health = 10f;
+    private Float maxSpeed = 20f;
+    private Float armor = 0f;
+    private Float acceleration = 15f;
+    private Long reloadTime = 100L;
     private Long lastAttack = 0L;
+    private Float Damage = 1f;
+
+    public Float getDamage() {
+        return Damage;
+    }
+
+    public void setDamage(Float damage) {
+        Damage = damage;
+    }
 
     public Long getReloadTime() {
         return reloadTime;
@@ -38,11 +47,11 @@ public class StatsComponent {
         this.entity = entity;
     }
 
-    public Integer getHealth() {
+    public Float getHealth() {
         return health;
     }
 
-    public void setHealth(Integer health) {
+    public void setHealth(Float health) {
         this.health = health;
     }
 
@@ -54,11 +63,11 @@ public class StatsComponent {
         this.maxSpeed = maxSpeed;
     }
 
-    public Integer getArmor() {
+    public Float getArmor() {
         return armor;
     }
 
-    public void setArmor(Integer armor) {
+    public void setArmor(Float armor) {
         this.armor = armor;
     }
 
@@ -68,5 +77,19 @@ public class StatsComponent {
 
     public void setAcceleration(Float acceleration) {
         this.acceleration = acceleration;
+    }
+
+
+    public void damageEntity(Float damage) {
+
+        float damagDealt = damage - armor;
+        if (damagDealt > 0) {
+            health -= damagDealt;
+            if (health < 0) {
+                entity.destroyMe = true;
+            }
+        }
+
+
     }
 }
