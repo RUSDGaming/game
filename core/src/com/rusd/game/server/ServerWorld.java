@@ -100,6 +100,36 @@ public class ServerWorld {
 
     };
 
+    public void resetPlayer(Entity player, Float xPos, Float yPos) {
+        Log.info(tag, "resetting player");
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+
+        bodyDef.position.set(xPos, yPos);
+        bodyDef.fixedRotation = true;
+
+        Body body = boxWorld.createBody(bodyDef);
+        body.setBullet(true);
+
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(2f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circleShape;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.6f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+        circleShape.dispose();
+        player.setBodyComponent(body);
+
+        body.setUserData(player);
+        player.setDestroyMe(false);
+
+        bodies.add(body);
+
+    }
+
 
     public Entity createPlayer() {
 
@@ -307,10 +337,11 @@ public class ServerWorld {
 
         switch (entity.getEntityType()) {
             case PLAYER:
-                entity.getStatsComponent().setHealth(10f);
-                // aaagrh this isnt working wtffffff
-                entity.getBodyComponent().setTransform(50, 50, 0);
 
+                bodies.remove(entity.getBodyComponent());
+                boxWorld.destroyBody(entity.getBodyComponent());
+                entity.getStatsComponent().setHealth(10f);
+                resetPlayer(entity, 50f, 50f);
                 break;
             case BULLET: {
                 entiesToRemove.add(entity);
