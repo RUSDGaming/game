@@ -46,7 +46,6 @@ public class ServerLoop implements Runnable {
             }
         }
 
-
     }
 
     Consumer<Connection> connectionConsumer = (Connection c) -> {

@@ -152,7 +152,7 @@ public class ServerWorld {
 
         bodies.add(body);
         entities.add(player);
-        statsComponents.add(statsComponent);
+
 
         return player;
     }
@@ -211,7 +211,6 @@ public class ServerWorld {
         deathTimerComponents.add(deathTimerComponent);
         bodies.add(body);
         entities.add(bullet);
-        statsComponents.add(statsComponent);
 
 
         //Vector3 cords = new Vector3(mousePos.x, mousePos.y, 0);
@@ -285,23 +284,49 @@ public class ServerWorld {
         ArrayList<StatsComponent> statsComponentsCopy = new ArrayList<>();
 
         // destroy all the bodies if it's entiy health is 0
+
+        /*
         statsComponents.stream().filter(sc -> sc.getHealth() <= 0).forEach(statConsumer);
         statsComponents.stream().filter(sc -> sc.getHealth() > 0).forEach(sc -> statsComponentsCopy.add(sc));
         statsComponents = statsComponentsCopy;
-
         entiesToRemove.stream().forEach(removeConsumer);
         entiesToRemove.clear();
+         */
 
+        entiesToRemove = new ArrayList<>();
+        entities.stream().forEach(markForDestruction);
+        entiesToRemove.stream().forEach(removeConsumer);
+        entiesToRemove = new ArrayList<>();
 
     }
 
+    Consumer<Entity> markForDestruction = (Entity entity) -> {
+        if (!entity.getDestroyMe()) {
+            return;
+        }
+
+        switch (entity.getEntityType()) {
+            case PLAYER:
+                entity.getStatsComponent().setHealth(10f);
+                // aaagrh this isnt working wtffffff
+                entity.getBodyComponent().setTransform(50, 50, 0);
+
+                break;
+            case BULLET: {
+                entiesToRemove.add(entity);
+                break;
+            }
+            case BUILDING:
+                break;
+        }
+
+    };
+
     Consumer<Entity> removeConsumer = (Entity entity) -> {
-        statsComponents.remove(entity.getStatsComponent());
+
         bodies.remove(entity.getBodyComponent());
         boxWorld.destroyBody(entity.getBodyComponent());
         entities.remove(entity);
-        players.remove(entity);
-        clientInputMap.remove(entity);
 
     };
 
