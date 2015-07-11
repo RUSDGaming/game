@@ -8,15 +8,21 @@ import com.badlogic.gdx.physics.box2d.Body;
  */
 public class Entity {
 
+    public enum EntityType {
+        PLAYER, BULLET, BUILDING
+    }
+
     public Body bodyComponent;
     public StatsComponent statsComponent;
     public RenderComponent renderComponent;
     public String name;
-    public EntityContactHandler entityContactHandler;
+    public EntityContactHandler entityContactHandler = new EntityContactHandler(this);
+    public EntityType entityType;
+    public Entity parentEntity;
 
+
+    // currently doesnt do aything
     protected Boolean destroyMe = false;
-
-
 
     @Deprecated// This is only a temp use case...
     private Color color = Color.PINK;
@@ -59,5 +65,37 @@ public class Entity {
 
     public void setStatsComponent(StatsComponent statsComponent) {
         this.statsComponent = statsComponent;
+    }
+
+    public Entity getParentEntity() {
+        return parentEntity;
+    }
+
+    public void setParentEntity(Entity parentEntity) {
+        this.parentEntity = parentEntity;
+    }
+
+    public EntityContactHandler getEntityContactHandler() {
+        return entityContactHandler;
+    }
+
+    public void setEntityContactHandler(EntityContactHandler entityContactHandler) {
+        this.entityContactHandler = entityContactHandler;
+    }
+
+    public EntityType getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(EntityType entityType) {
+        this.entityType = entityType;
+    }
+
+    public Boolean getDestroyMe() {
+        return destroyMe;
+    }
+
+    public void setDestroyMe(Boolean destroyMe) {
+        this.destroyMe = destroyMe;
     }
 }

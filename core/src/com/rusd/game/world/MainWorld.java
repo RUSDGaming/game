@@ -45,9 +45,9 @@ public class MainWorld {
         Entity player = new Entity();
         player.bodyComponent = addBody();
         StatsComponent statsComponent = new StatsComponent();
-        statsComponent.setHealth(10);
+        statsComponent.setHealth(10f);
         statsComponent.setMaxSpeed(70f);
-        statsComponent.setArmor(1);
+        statsComponent.setArmor(1f);
         statsComponent.setAcceleration(12f);
         statsComponent.setEntity(player);
         player.statsComponent = statsComponent;
@@ -133,7 +133,7 @@ public class MainWorld {
 
         StatsComponent statsComponent = new StatsComponent();
         statsComponent.setEntity(bullet);
-        statsComponent.setHealth(10);
+            statsComponent.setHealth(10f);
 
         DeathTimerComponent deathTimerComponent = new DeathTimerComponent(2000L, bullet);
         bullet.setStatsComponent(statsComponent);

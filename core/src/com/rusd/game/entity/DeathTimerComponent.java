@@ -23,11 +23,11 @@ public class DeathTimerComponent {
                     running = true;
                     Thread.sleep(lifeSpan);
                     running = false;
-                    entity.statsComponent.setHealth(-1);
+                    entity.statsComponent.setHealth(-1f);
                     Log.debug(tag, "died");
                 } catch (InterruptedException e) {
                     Log.error(tag, e.toString());
-                    entity.statsComponent.setHealth(-1);
+                    entity.statsComponent.setHealth(-1f);
                     running = false;
                 }
             }

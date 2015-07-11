@@ -4,7 +4,6 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +16,17 @@ public class ContactListenerImpl implements ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-        Log.info(tag, "there was a contact!!");
+//        Log.info(tag, "there was a contact!!");
 
+        List<Entity> entities = getEntities(contact);
+        entities.get(0).getEntityContactHandler().handleContact(entities.get(1));
+        entities.get(1).getEntityContactHandler().handleContact(entities.get(0));
 
 
 
     }
 
-    public List getEntities(Contact contact) {
+    public List<Entity> getEntities(Contact contact) {
 
         List<Entity> entities = new ArrayList<>();
 

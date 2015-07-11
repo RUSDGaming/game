@@ -58,7 +58,6 @@ public class ServerWorld {
 
         if (clientInput.getFire1()) {
             addBullet(entity, clientInput.getMouseWorldPos());
-
         }
 
         Float verticalAxis = 0f;
@@ -146,6 +145,10 @@ public class ServerWorld {
         renderComponent.setCircle(circle);
         player.setRenderComponent(renderComponent);
 
+        body.setUserData(player);
+        player.setParentEntity(player);
+        player.setEntityType(Entity.EntityType.PLAYER);
+
 
         bodies.add(body);
         entities.add(player);
@@ -191,7 +194,8 @@ public class ServerWorld {
 
         Entity bullet = new Entity();
         bullet.setColor(player.getColor());
-
+        bullet.setParentEntity(player);
+        body.setUserData(bullet);
         bullet.setBodyComponent(body);
 
         StatsComponent statsComponent = new StatsComponent();
@@ -201,14 +205,7 @@ public class ServerWorld {
 
         DeathTimerComponent deathTimerComponent = new DeathTimerComponent(2000L, bullet);
         bullet.setStatsComponent(statsComponent);
-
-//        RenderComponent renderComponent = new RenderComponent();
-//        renderComponent.setEntity(bullet);
-//        Circle circle = new Circle();
-//        circle.setPosition(5, 5);
-//        renderComponent.setShape(RenderComponent.Shape.CIRCLE);
-//        renderComponent.setCircle(circle);
-//        bullet.setRenderComponent(renderComponent);
+        bullet.setEntityType(Entity.EntityType.BULLET);
 
 
         deathTimerComponents.add(deathTimerComponent);
