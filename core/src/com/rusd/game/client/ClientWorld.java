@@ -1,5 +1,7 @@
 package com.rusd.game.client;
 
+import com.rusd.game.network.ScoreBoard;
+
 import java.util.ArrayList;
 
 /**
@@ -7,7 +9,15 @@ import java.util.ArrayList;
  */
 public class ClientWorld {
     ArrayList<ClientEntity> entities = new ArrayList<>();
+    ScoreBoard scoreBoard = new ScoreBoard();
 
+    public ScoreBoard getScoreBoard() {
+        return scoreBoard;
+    }
+
+    public void setScoreBoard(ScoreBoard scoreBoard) {
+        this.scoreBoard = scoreBoard;
+    }
 
     public ArrayList<ClientEntity> getEntities() {
         return entities;

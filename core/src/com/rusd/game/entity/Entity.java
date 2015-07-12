@@ -2,6 +2,7 @@ package com.rusd.game.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.rusd.game.observers.Subject;
 
 /**
  * Created by shane on 7/2/15.
@@ -16,16 +17,29 @@ public class Entity {
     public StatsComponent statsComponent;
     public RenderComponent renderComponent;
     public String name;
-    public EntityContactHandler entityContactHandler = new EntityContactHandler(this);
+    public EntityContactHandler entityContactHandler;
     public EntityType entityType;
     public Entity parentEntity;
-
-
     // currently doesnt do aything
     protected Boolean destroyMe = false;
+    public Boolean disconnect = false;
 
     @Deprecated// This is only a temp use case...
     private Color color = Color.PINK;
+
+    public Entity(Subject subject) {
+        entityContactHandler = new EntityContactHandler(this, subject);
+    }
+
+    public ScoreComponent getScoreComponent() {
+        return scoreComponent;
+    }
+
+    public void setScoreComponent(ScoreComponent scoreComponent) {
+        this.scoreComponent = scoreComponent;
+    }
+
+    public ScoreComponent scoreComponent;
 
     public Color getColor() {
         return color;

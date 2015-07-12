@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.rusd.game.entity.DeathTimerComponent;
 import com.rusd.game.entity.Entity;
 import com.rusd.game.entity.StatsComponent;
+import com.rusd.game.observers.Subject;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -42,7 +43,7 @@ public class MainWorld {
 
 
     public void initPlayer(){
-        Entity player = new Entity();
+        Entity player = new Entity(new Subject());
         player.bodyComponent = addBody();
         StatsComponent statsComponent = new StatsComponent();
         statsComponent.setHealth(10f);
@@ -127,7 +128,7 @@ public class MainWorld {
         Fixture fixture = body.createFixture(fixtureDef);
         circleShape.dispose();
 
-        Entity bullet = new Entity();
+            Entity bullet = new Entity(new Subject());
 
         bullet.setBodyComponent(body);
 

@@ -12,6 +12,7 @@ import com.esotericsoftware.minlog.Log;
 import com.rusd.game.entity.*;
 import com.rusd.game.network.ClientInput;
 import com.rusd.game.network.Login;
+import com.rusd.game.observers.Subject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +39,14 @@ public class ServerWorld {
 
     private ArrayList<Entity> entiesToRemove = new ArrayList<>();
 
+    private ArrayList<ScoreComponent> scores = new ArrayList<>();
+    public Boolean resendScore = false;
+
+    public ArrayList<ScoreComponent> getScores() {
+        return scores;
+    }
+
+    public Subject subject;
 
     public ServerWorld() {
         Box2D.init();
@@ -46,13 +55,11 @@ public class ServerWorld {
 
     }
 
-
     public void stepWorld() {
         boxWorld.step(1 / 60f, 6, 2);
         cleanUp();
         clientInputMap.forEach(inputConsumer);
     }
-
 
     BiConsumer<Entity, ClientInput> inputConsumer = (entity, clientInput) -> {
 
@@ -83,7 +90,6 @@ public class ServerWorld {
                 playerBody.getPosition().y,
                 true);
 
-
         //prevents the awkward sliding at low speeds after damping
         Float x = playerBody.getLinearVelocity().x;
         Float y = playerBody.getLinearVelocity().y;
@@ -96,7 +102,6 @@ public class ServerWorld {
         }
 
         playerBody.setLinearVelocity(x, y);
-
 
     };
 
@@ -133,7 +138,7 @@ public class ServerWorld {
 
     public Entity createPlayer() {
 
-        Entity player = new Entity();
+        Entity player = new Entity(subject);
 
 
         BodyDef bodyDef = new BodyDef();
@@ -178,8 +183,10 @@ public class ServerWorld {
         body.setUserData(player);
         player.setParentEntity(player);
         player.setEntityType(Entity.EntityType.PLAYER);
+        ScoreComponent scoreComponent = new ScoreComponent(player);
+        player.setScoreComponent(scoreComponent);
 
-
+        scores.add(scoreComponent);
         bodies.add(body);
         entities.add(player);
 
@@ -222,7 +229,7 @@ public class ServerWorld {
 
         circleShape.dispose();
 
-        Entity bullet = new Entity();
+        Entity bullet = new Entity(subject);
         bullet.setColor(player.getColor());
         bullet.setParentEntity(player);
         body.setUserData(bullet);
@@ -269,6 +276,7 @@ public class ServerWorld {
         player.setName(login.getUsername());
         Log.info(tag, login.getUsername() + " Logged in");
         player.setColor(new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1));
+        player.setName(login.getUsername());
 
         if (players.containsKey(c)) {
             Log.info(tag, "player already logged in" + login.getUsername());
@@ -293,7 +301,8 @@ public class ServerWorld {
         Entity e = players.remove(connection);
 
         if (e != null) {
-            entiesToRemove.add(e);
+            e.disconnect = true;
+            e.setDestroyMe(true);
             return true;
         }
         connection.close();
@@ -313,16 +322,6 @@ public class ServerWorld {
         ArrayList<Entity> entitiesCopy = new ArrayList<>();
         ArrayList<StatsComponent> statsComponentsCopy = new ArrayList<>();
 
-        // destroy all the bodies if it's entiy health is 0
-
-        /*
-        statsComponents.stream().filter(sc -> sc.getHealth() <= 0).forEach(statConsumer);
-        statsComponents.stream().filter(sc -> sc.getHealth() > 0).forEach(sc -> statsComponentsCopy.add(sc));
-        statsComponents = statsComponentsCopy;
-        entiesToRemove.stream().forEach(removeConsumer);
-        entiesToRemove.clear();
-         */
-
         entiesToRemove = new ArrayList<>();
         entities.stream().forEach(markForDestruction);
         entiesToRemove.stream().forEach(removeConsumer);
@@ -336,13 +335,17 @@ public class ServerWorld {
         }
 
         switch (entity.getEntityType()) {
-            case PLAYER:
-
+            case PLAYER: {
+                if (entity.disconnect) {
+                    entiesToRemove.add(entity);
+                    break;
+                }
                 bodies.remove(entity.getBodyComponent());
                 boxWorld.destroyBody(entity.getBodyComponent());
                 entity.getStatsComponent().setHealth(10f);
                 resetPlayer(entity, 50f, 50f);
                 break;
+            }
             case BULLET: {
                 entiesToRemove.add(entity);
                 break;
@@ -355,15 +358,14 @@ public class ServerWorld {
 
     Consumer<Entity> removeConsumer = (Entity entity) -> {
 
+        statsComponents.remove(entity);
+        scores.remove(entity.getScoreComponent());
+        clientInputMap.remove(entity);
         bodies.remove(entity.getBodyComponent());
         boxWorld.destroyBody(entity.getBodyComponent());
         entities.remove(entity);
-
     };
 
-    // What is how can java 8?
-    //http://briancovelli.com/wp-content/uploads/2014/05/i-have-no-idea-what-im-doing-science-dog.jpg
-    // destroys the entitys that get passed here.
     Consumer<StatsComponent> statConsumer = (StatsComponent sc) -> {
         boxWorld.destroyBody(sc.getEntity().getBodyComponent());
         entities.remove(sc.getEntity());

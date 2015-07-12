@@ -14,6 +14,7 @@ import java.util.List;
 public class ContactListenerImpl implements ContactListener {
     public static final String tag = ContactListenerImpl.class.getSimpleName();
 
+
     @Override
     public void beginContact(Contact contact) {
 //        Log.info(tag, "there was a contact!!");

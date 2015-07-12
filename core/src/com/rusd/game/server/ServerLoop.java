@@ -4,10 +4,9 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
+import com.rusd.game.network.ScoreBoard;
 import com.rusd.game.network.TransitWorld;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -17,7 +16,7 @@ public class ServerLoop implements Runnable {
     public static final String tag = ServerLoop.class.getSimpleName();
 
     private ServerWorld world;
-    private ExecutorService executorService;
+    //private ExecutorService executorService;
 
     private Long timeStep = 20L;
     private Long start;
@@ -26,7 +25,7 @@ public class ServerLoop implements Runnable {
 
     public ServerLoop(ServerWorld world, Server server) {
         this.server = server;
-        executorService = Executors.newFixedThreadPool(4);
+        //  executorService = Executors.newFixedThreadPool(4);
         this.world = world;
     }
 
@@ -40,7 +39,18 @@ public class ServerLoop implements Runnable {
                 transitWorld = new TransitWorld();
                 transitWorld.setEntities(world.getEntities());
                 server.sendToAllUDP(transitWorld);
-                Thread.sleep(timeStep + start - TimeUtils.millis());
+                //  if(world.resendScore){
+                ScoreBoard scoreBoard = new ScoreBoard();
+                scoreBoard.setScoresComponents(world.getScores());
+                server.sendToAllTCP(scoreBoard);
+                //world.resendScore = false;
+                //}
+                Long sleepTime = timeStep + start - TimeUtils.millis();
+                if (sleepTime < 0) {
+                    Log.warn(tag, "Server cant keep up");
+                } else {
+                    Thread.sleep(sleepTime);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

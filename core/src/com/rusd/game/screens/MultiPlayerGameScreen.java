@@ -15,6 +15,7 @@ import com.rusd.game.constants.Constants;
 import com.rusd.game.input.MultiPlayerInput;
 import com.rusd.game.network.ClientInput;
 import com.rusd.game.network.ClientListener;
+import com.rusd.game.network.Score;
 import com.rusd.game.start.MainGameClass;
 
 import java.util.function.Consumer;
@@ -67,13 +68,20 @@ public class MultiPlayerGameScreen implements Screen {
         sr.setColor(Color.BLUE);
         clientWorld.getEntities().stream().forEach(entityRenderer);
         sr.end();
-        game.batch.setProjectionMatrix(camera.combined);
+        //game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+
+        for (int i = 0; i < clientWorld.getScoreBoard().getScores().size(); i++) {
+            Score score = clientWorld.getScoreBoard().getScores().get(i);
+
+            game.font.draw(game.batch, score.toString(), 0, Constants.HEIGHT - 20 * i);
+        }
 
 //        clientWorld.getEntities().stream().forEach(entityBatchRenderer);
         game.batch.end();
 
     }
+
 
     Consumer<ClientEntity> entityRenderer = (ClientEntity e) -> {
         sr.setColor(e.getColor());

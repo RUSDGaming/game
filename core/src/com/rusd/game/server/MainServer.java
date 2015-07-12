@@ -4,6 +4,8 @@ import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 import com.rusd.game.network.RegisterClasses;
 import com.rusd.game.network.ServerListener;
+import com.rusd.game.observers.ScoreBoardObserver;
+import com.rusd.game.observers.Subject;
 
 import java.io.IOException;
 
@@ -31,6 +33,11 @@ public class MainServer {
         Server server;
         server = new Server();
         RegisterClasses.register(server);
+        Subject subject = new Subject();
+        ScoreBoardObserver obvserver = new ScoreBoardObserver();
+        mainServer.serverWorld.subject = subject;
+        subject.addObserver(obvserver);
+        
 
         Thread serverThread = new Thread(server);
         server.bind(54555, 54777);

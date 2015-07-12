@@ -26,6 +26,8 @@ public class RegisterClasses {
         kryo.register(com.rusd.game.network.TransitWorld.class);
         kryo.register(Vector3.class);
         kryo.register(Color.class);
+        kryo.register(Score.class);
+        kryo.register(ScoreBoard.class);
 //        kryo.register(DeathTimerComponent.class);
 //        kryo.register(RenderComponent.class);
 //        kryo.register(StatsComponent.class);

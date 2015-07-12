@@ -28,9 +28,14 @@ public class ClientListener extends Listener {
             if (tw.getClientEntities() != null) {
                 clientWorld.setEntities(tw.getClientEntities());
             }
-
+        }
+        if (o instanceof ScoreBoard) {
+            //Log.info(tag,"got a scoreBoard");
+            ScoreBoard sb = (ScoreBoard) o;
+            clientWorld.setScoreBoard(sb);
         }
     }
+
 
     @Override
     public void disconnected(Connection connection) {
