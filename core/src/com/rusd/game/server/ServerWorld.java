@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
+import com.rusd.game.constants.Constants;
 import com.rusd.game.entity.*;
 import com.rusd.game.network.ClientInput;
 import com.rusd.game.network.Login;
@@ -52,6 +53,9 @@ public class ServerWorld {
         Box2D.init();
         boxWorld = new World(new Vector2(0, 0), true);
         boxWorld.setContactListener(new ContactListenerImpl());
+
+        createRect(0, 100, 50, 5);
+        createRect(50, 50, 10, 10);
 
     }
 
@@ -170,15 +174,13 @@ public class ServerWorld {
         statsComponent.setReloadTime(100L);
         statsComponent.setAcceleration(15f);
         statsComponent.setMaxSpeed(50f);
+        statsComponent.setDamage(2f);
         player.setStatsComponent(statsComponent);
 
-        RenderComponent renderComponent = new RenderComponent();
-        renderComponent.setEntity(player);
+
         Circle circle = new Circle();
         circle.setPosition(body.getPosition().x, body.getPosition().y);
-        renderComponent.setShape(RenderComponent.Shape.CIRCLE);
-        renderComponent.setCircle(circle);
-        player.setRenderComponent(renderComponent);
+
 
         body.setUserData(player);
         player.setParentEntity(player);
@@ -192,6 +194,50 @@ public class ServerWorld {
 
 
         return player;
+    }
+
+    public void createRect(float posX, float posY, float width, float height) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(posX, posY);
+
+        Body body = boxWorld.createBody(bodyDef);
+
+        PolygonShape polygonShape = new PolygonShape();
+        polygonShape.setAsBox(width, height);
+
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = polygonShape;
+        fixtureDef.friction = .8f;
+
+        body.createFixture(fixtureDef);
+
+        polygonShape.dispose();
+
+        Entity building = new Entity(subject);
+        building.setColor(Color.GREEN);
+        building.setParentEntity(building);
+        body.setUserData(building);
+        building.setEntityType(Entity.EntityType.BUILDING);
+        building.setBodyComponent(body);
+
+        StatsComponent statsComponent = new StatsComponent();
+        statsComponent.setEntity(building);
+        statsComponent.setHealth(Float.MAX_VALUE);
+
+        building.setStatsComponent(statsComponent);
+
+        RenderComponent renderComponent = new RenderComponent();
+        renderComponent.setWidth(width);
+        renderComponent.setHeight(height);
+        building.setRenderComponent(renderComponent);
+
+
+        bodies.add(body);
+        entities.add(building);
+
+
     }
 
 
@@ -238,6 +284,8 @@ public class ServerWorld {
         StatsComponent statsComponent = new StatsComponent();
         statsComponent.setEntity(bullet);
         statsComponent.setHealth(10f);
+        statsComponent.setDamage(player.getStatsComponent().getDamage());
+
 
 
         DeathTimerComponent deathTimerComponent = new DeathTimerComponent(2000L, bullet);
@@ -343,7 +391,7 @@ public class ServerWorld {
                 bodies.remove(entity.getBodyComponent());
                 boxWorld.destroyBody(entity.getBodyComponent());
                 entity.getStatsComponent().setHealth(10f);
-                resetPlayer(entity, 50f, 50f);
+                resetPlayer(entity, Constants.VIEWPORTWIDTH / 2f, Constants.VIEWPORTHEIGHT / 2f);
                 break;
             }
             case BULLET: {

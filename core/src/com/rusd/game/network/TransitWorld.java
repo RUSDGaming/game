@@ -1,6 +1,5 @@
 package com.rusd.game.network;
 
-import com.esotericsoftware.minlog.Log;
 import com.rusd.game.client.ClientEntity;
 import com.rusd.game.entity.Entity;
 
@@ -31,16 +30,30 @@ public class TransitWorld {
         this.entities = new ArrayList<>();
         for (Entity e : entities) {
             ClientEntity clientEntity = new ClientEntity();
-            clientEntity.setPosition(e.getBodyComponent().getPosition());
-            clientEntity.setTextureId(-1);
             clientEntity.setName(e.getName());
             clientEntity.setColor(e.getColor());
-            try {
-                clientEntity.setRadius(e.getBodyComponent().getFixtureList().get(0).getShape().getRadius());
+            clientEntity.setTextureId(-1);
 
-            } catch (Exception ex) {
-                Log.info(ex.toString());
+            clientEntity.setPosition(e.getBodyComponent().getPosition());
+            switch (e.getEntityType()) {
+
+                case PLAYER: {
+                    clientEntity.setRadius(e.getBodyComponent().getFixtureList().get(0).getShape().getRadius());
+                    break;
+                }
+
+                case BULLET: {
+                    clientEntity.setRadius(e.getBodyComponent().getFixtureList().get(0).getShape().getRadius());
+                    break;
+                }
+                case BUILDING:
+                    clientEntity.setShape(1);
+                    clientEntity.setWidth(e.getRenderComponent().getWidth());
+                    clientEntity.setHeight(e.getRenderComponent().getHeight());
+                    break;
             }
+
+
             this.entities.add(clientEntity);
         }
 

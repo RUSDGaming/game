@@ -13,7 +13,7 @@ public class StatsComponent {
     private Float acceleration = 15f;
     private Long reloadTime = 100L;
     private Long lastAttack = 0L;
-    private Float Damage = 1f;
+    private Float Damage = 0f;
 
     public Float getDamage() {
         return Damage;

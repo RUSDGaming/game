@@ -20,8 +20,10 @@ public class ContactListenerImpl implements ContactListener {
 //        Log.info(tag, "there was a contact!!");
 
         List<Entity> entities = getEntities(contact);
-        entities.get(0).getEntityContactHandler().handleContact(entities.get(1));
-        entities.get(1).getEntityContactHandler().handleContact(entities.get(0));
+        if (entities.get(0) != null || entities.get(1) != null) {
+            entities.get(0).getEntityContactHandler().handleContact(entities.get(1));
+            entities.get(1).getEntityContactHandler().handleContact(entities.get(0));
+        }
 
 
 

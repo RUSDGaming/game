@@ -10,10 +10,38 @@ public class ClientEntity {
     private int textureId;
     private String name = "";
     private Color color = Color.PINK;
+    // 0 == circle, 1 == rectangle  2 == square
+    private int shape;
 
     private float x;
     private float y;
     private float radius;
+    private float width;
+    private float height;
+
+    public int getShape() {
+        return shape;
+    }
+
+    public void setShape(int shape) {
+        this.shape = shape;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
 
     public Color getColor() {
         return color;

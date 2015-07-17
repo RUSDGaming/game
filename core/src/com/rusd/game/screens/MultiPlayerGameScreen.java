@@ -85,7 +85,23 @@ public class MultiPlayerGameScreen implements Screen {
 
     Consumer<ClientEntity> entityRenderer = (ClientEntity e) -> {
         sr.setColor(e.getColor());
-        sr.circle(e.getX(), e.getY(), e.getRadius());
+        switch (e.getShape()) {
+            case 0: {
+                sr.circle(e.getX(), e.getY(), e.getRadius());
+                break;
+            }
+            case 1: {
+                sr.rect(e.getX() - e.getWidth(), e.getY() - e.getHeight(), e.getWidth() * 2, e.getHeight() * 2);
+                break;
+            }
+            case 2: {
+                break;
+            }
+            default: {
+                break;
+            }
+
+        }
     };
 
     Consumer<ClientEntity> entityBatchRenderer = (ClientEntity e) -> {
