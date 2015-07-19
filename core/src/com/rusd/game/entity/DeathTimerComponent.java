@@ -24,6 +24,7 @@ public class DeathTimerComponent {
                     Thread.sleep(lifeSpan);
                     running = false;
                     entity.statsComponent.setHealth(-1f);
+                    entity.setDestroyMe(true);
                     Log.debug(tag, "died");
                 } catch (InterruptedException e) {
                     Log.error(tag, e.toString());

@@ -20,6 +20,7 @@ public class Entity {
     public EntityContactHandler entityContactHandler;
     public EntityType entityType;
     public Entity parentEntity;
+    public DeathTimerComponent deathTimerComponent;
     // currently doesnt do aything
     protected Boolean destroyMe = false;
     public Boolean disconnect = false;
@@ -111,5 +112,13 @@ public class Entity {
 
     public void setDestroyMe(Boolean destroyMe) {
         this.destroyMe = destroyMe;
+    }
+
+    public DeathTimerComponent getDeathTimerComponent() {
+        return deathTimerComponent;
+    }
+
+    public void setDeathTimerComponent(DeathTimerComponent deathTimerComponent) {
+        this.deathTimerComponent = deathTimerComponent;
     }
 }

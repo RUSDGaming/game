@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * Created by shane on 7/3/15.
@@ -31,8 +30,6 @@ public class ServerWorld {
     private World boxWorld;
 
     private ArrayList<Body> bodies = new ArrayList<>();
-    private ArrayList<StatsComponent> statsComponents = new ArrayList<>();
-    private ArrayList<DeathTimerComponent> deathTimerComponents = new ArrayList<>();
     private ArrayList<Entity> entities = new ArrayList<>();
 
     private Map<Connection, Entity> players = new HashMap<>();
@@ -54,8 +51,11 @@ public class ServerWorld {
         boxWorld = new World(new Vector2(0, 0), true);
         boxWorld.setContactListener(new ContactListenerImpl());
 
-        createRect(0, 100, 50, 5);
-        createRect(50, 50, 10, 10);
+        createRect(Constants.VIEWPORTWIDTH / 2, 0, Constants.VIEWPORTHEIGHT, 5);
+        createRect(Constants.VIEWPORTWIDTH / 2, Constants.VIEWPORTHEIGHT, Constants.VIEWPORTHEIGHT, 5);
+
+        createRect(0, Constants.VIEWPORTHEIGHT / 2, 5, Constants.VIEWPORTHEIGHT / 2);
+        createRect(Constants.VIEWPORTWIDTH, Constants.VIEWPORTHEIGHT / 2, 5, Constants.VIEWPORTHEIGHT / 2);
 
     }
 
@@ -144,7 +144,6 @@ public class ServerWorld {
 
         Entity player = new Entity(subject);
 
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
@@ -165,7 +164,6 @@ public class ServerWorld {
         Fixture fixture = body.createFixture(fixtureDef);
         circleShape.dispose();
 
-
         player.setBodyComponent(body);
 
         StatsComponent statsComponent = new StatsComponent();
@@ -176,7 +174,6 @@ public class ServerWorld {
         statsComponent.setMaxSpeed(50f);
         statsComponent.setDamage(2f);
         player.setStatsComponent(statsComponent);
-
 
         Circle circle = new Circle();
         circle.setPosition(body.getPosition().x, body.getPosition().y);
@@ -192,7 +189,6 @@ public class ServerWorld {
         bodies.add(body);
         entities.add(player);
 
-
         return player;
     }
 
@@ -205,7 +201,6 @@ public class ServerWorld {
 
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(width, height);
-
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
@@ -291,9 +286,9 @@ public class ServerWorld {
         DeathTimerComponent deathTimerComponent = new DeathTimerComponent(2000L, bullet);
         bullet.setStatsComponent(statsComponent);
         bullet.setEntityType(Entity.EntityType.BULLET);
+        bullet.setDeathTimerComponent(deathTimerComponent);
 
 
-        deathTimerComponents.add(deathTimerComponent);
         bodies.add(body);
         entities.add(bullet);
 
@@ -361,15 +356,6 @@ public class ServerWorld {
 
     public void cleanUp() {
 
-        // should problably be using flat arrays for performance, I'm not concerned at this point though
-        Stream stream = deathTimerComponents.stream().filter(dtc -> !dtc.isRunning());
-        ArrayList<DeathTimerComponent> deathTimerComponentsCopy = new ArrayList<>();
-        stream.forEach(dtc -> deathTimerComponentsCopy.add((DeathTimerComponent) dtc));
-        deathTimerComponents = deathTimerComponentsCopy;
-
-        ArrayList<Entity> entitiesCopy = new ArrayList<>();
-        ArrayList<StatsComponent> statsComponentsCopy = new ArrayList<>();
-
         entiesToRemove = new ArrayList<>();
         entities.stream().forEach(markForDestruction);
         entiesToRemove.stream().forEach(removeConsumer);
@@ -406,7 +392,7 @@ public class ServerWorld {
 
     Consumer<Entity> removeConsumer = (Entity entity) -> {
 
-        statsComponents.remove(entity);
+
         scores.remove(entity.getScoreComponent());
         clientInputMap.remove(entity);
         bodies.remove(entity.getBodyComponent());

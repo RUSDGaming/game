@@ -41,7 +41,7 @@ public class ClientListener extends Listener {
     public void disconnected(Connection connection) {
         Gdx.app.log(tag, "Was disconnected... " + connection.toString());
         Gdx.app.exit();
-        super.disconnected(connection);
+        //super.disconnected(connection);
     }
 
     // when you change the screen from anonther thread you need to use this runable.

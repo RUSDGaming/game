@@ -63,6 +63,8 @@ public class MultiPlayerGameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
+
+
         sr.begin(ShapeRenderer.ShapeType.Filled);
         sr.setProjectionMatrix(camera.combined);
         sr.setColor(Color.BLUE);
@@ -165,6 +167,21 @@ public class MultiPlayerGameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.O)) {
             clientInput.setDown(true);
         }
+
+
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            camera.translate(0, 1);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            camera.translate(0, -1);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            camera.translate(-1, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            camera.translate(1, 0);
+        }
+
 
         client.sendUDP(clientInput);
 
