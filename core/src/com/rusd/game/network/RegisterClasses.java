@@ -28,6 +28,7 @@ public class RegisterClasses {
         kryo.register(Color.class);
         kryo.register(Score.class);
         kryo.register(ScoreBoard.class);
+        kryo.register(HudInfo.class);
 //        kryo.register(DeathTimerComponent.class);
 //        kryo.register(RenderComponent.class);
 //        kryo.register(StatsComponent.class);
